@@ -68,7 +68,7 @@ abstract class TweetSet {
    * Question: Should we implment this method here, or should it remain abstract
    * and be implemented in the subclasses?
    */
-  def mostRetweeted: Tweet = ???
+  def mostRetweeted: Tweet
 
   /**
    * Returns a list containing all tweets of this set, sorted by retweet count
@@ -79,7 +79,16 @@ abstract class TweetSet {
    * Question: Should we implment this method here, or should it remain abstract
    * and be implemented in the subclasses?
    */
-  def descendingByRetweet: TweetList = ???
+  def descendingByRetweet: TweetList = {
+    def loop(ts: TweetSet, acc: TweetList): TweetList = {
+      if (this.isEmpty) acc
+      else {
+        val mr = this.mostRetweeted
+        loop(this.remove(mr), new Cons(mr, acc))
+      }
+    }
+    loop(this, Nil)
+  }
 
 
   /**
@@ -118,6 +127,8 @@ class Empty extends TweetSet {
 
   def union(that: TweetSet) = that
 
+  def mostRetweeted: Tweet = throw new java.util.NoSuchElementException()
+
   /**
    * The following methods are already implemented
    */
@@ -143,6 +154,25 @@ class NonEmpty(elem: Tweet, left: TweetSet, right: TweetSet) extends TweetSet {
 
   def union(that: TweetSet) = {
     ((left union right) union that) incl elem
+  }
+
+  def mostRetweeted: Tweet = {
+    if (left.isEmpty && right.isEmpty) elem
+    else if (!left.isEmpty && right.isEmpty) {
+      val leftMostRetweeted = left.mostRetweeted
+      if (elem.retweets >= leftMostRetweeted.retweets) elem else leftMostRetweeted
+    } else if (left.isEmpty && !right.isEmpty) {
+      val rightMostRetweeted = right.mostRetweeted
+      if (elem.retweets >= rightMostRetweeted.retweets) elem else rightMostRetweeted
+    } else {
+      val leftMostRetweeted = left.mostRetweeted
+      val rightMostRetweeted = right.mostRetweeted
+      if (elem.retweets >= leftMostRetweeted.retweets && elem.retweets >=
+        rightMostRetweeted.retweets) elem
+      else if (leftMostRetweeted.retweets >= elem.retweets &&
+        leftMostRetweeted.retweets >= rightMostRetweeted.retweets) leftMostRetweeted
+      else rightMostRetweeted
+    }
   }
 
   /**
