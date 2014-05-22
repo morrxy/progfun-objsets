@@ -142,7 +142,7 @@ class NonEmpty(elem: Tweet, left: TweetSet, right: TweetSet) extends TweetSet {
   }
 
   def union(that: TweetSet) = {
-    
+    ((left union right) union that) incl elem
   }
 
   /**
