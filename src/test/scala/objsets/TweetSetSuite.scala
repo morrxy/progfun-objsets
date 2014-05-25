@@ -69,4 +69,11 @@ class TweetSetSuite extends FunSuite {
       assert(trends.head.user == "a" || trends.head.user == "b")
     }
   }
+
+  test("mostRetweet: Google TweetSet") {
+    new TestSets {
+      val trends = GoogleVsApple.googleTweets.mostRetweeted
+      assert(trends.retweets === 290)
+    }
+  }
 }
