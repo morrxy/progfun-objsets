@@ -114,7 +114,8 @@ class Empty extends TweetSet {
 
   def isEmpty = true
 
-  def filterAcc(p: Tweet => Boolean, acc: TweetSet): TweetSet = new Empty
+//  def filterAcc(p: Tweet => Boolean, acc: TweetSet): TweetSet = new Empty
+  def filterAcc(p: Tweet => Boolean, acc: TweetSet): TweetSet = acc
 
   def union(that: TweetSet) = that
 
@@ -139,10 +140,16 @@ class NonEmpty(elem: Tweet, left: TweetSet, right: TweetSet) extends TweetSet {
 
   def isEmpty = false
 
+//  def filterAcc(p: Tweet => Boolean, acc: TweetSet): TweetSet = {
+//    val topset = if (p(elem)) acc.incl(elem) else acc
+//    val leftset = if (left.isEmpty) topset else left.filterAcc(p, topset)
+//    if (right.isEmpty) leftset else right.filterAcc(p, leftset)
+//  }
+
   def filterAcc(p: Tweet => Boolean, acc: TweetSet): TweetSet = {
     val topset = if (p(elem)) acc.incl(elem) else acc
-    val leftset = if (left.isEmpty) topset else left.filterAcc(p, topset)
-    if (right.isEmpty) leftset else right.filterAcc(p, leftset)
+    val leftset = left.filterAcc(p, topset)
+    right.filterAcc(p, leftset)
   }
 
   def union(that: TweetSet) = {
